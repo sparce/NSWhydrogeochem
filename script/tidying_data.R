@@ -11,13 +11,18 @@ Asu<-read_csv("data/asu19100cp.csv")
 
 
 Minex_S_Cobar<-Geochem1 %>%
-  select(7:9,12,14,17,20:26) %>%                          #extract columns of interest
-  unite(1,2,3,4, col= "SampleID", sep="-")%>%             #combine column to get sampleID
-  mutate("SampleName"=toupper(SiteName))%>%               # homogenise samplename to capital
-                                                          # ????? need to split row into 2 when duplicate sampling
-  rename(m_asl=ElevationMetresAboveSeaLevel) %>%          #rename column for clarity
-                                                          # change fro scientific writing to regular numeric 
+  select(7:9,12,14,17,20:27) %>%                               # xtract columns of interest
+  unite(1,2,3,4, col= "SampleID", sep="-")%>%                  # combine column to get sampleID
+  mutate("SampleName"=toupper(SiteName))%>%                    # homogenise samplename to capital
+  separate_rows(SampleName, sep=" ")  %>%                      # ????? need to split row into 2 when duplicate sampling
+  filter(str_detect(SampleName,"MX")|is.na(SampleName)) %>%    # need to delete row that do not correspond to samples
+  rename(m_asl=ElevationMetresAboveSeaLevel)                  #rename column for clarity
+  separate(WaterTable, c("depth_water_table","Obs_water_table"))                                                             # change fro scientific writing to regular numeric 
   
   #Watertable homogenise to number and split into other column for accuracy that is defined by either a space or not separated only followed by ?
   
   
+  
+  
+                                                
+
