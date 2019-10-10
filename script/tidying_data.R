@@ -10,21 +10,30 @@ Asu<-read_csv("data/asu19100cp.csv")
 #work on datasheet Entity-watersample
 
 
-Minex_S_Cobar<-Geochem1 %>%
+Geochem1_tidy<-Geochem1 %>%
   select(7:9,12,14,17,20:27,42:45) %>%                               # xtract columns of interest
   unite(1,2,3,4, col= "SampleID", sep="-")%>%                  # combine column to get sampleID
   mutate("SampleName"=toupper(SiteName))%>%                    # homogenise samplename to capital
   separate_rows(SampleName, sep=" ")  %>%                      # ????? need to split row into 2 when duplicate sampling
   filter(str_detect(SampleName,"MX")|is.na(SampleName)) %>%    # need to delete row that do not correspond to samples
   rename(m_asl=ElevationMetresAboveSeaLevel)%>%                 #rename column for clarity
-  mutate("StationDeposit"=toupper(StationDeposit))
+  mutate("StationDeposit"=toupper(StationDeposit)) %>% 
   #mutate(WaterTable_depth_m = sub("[^0-9]*([0-9\\.]*).*","\\1",Minex_S_Cobar$WaterTable))
   select(16,1,2,5:10,12:15)
   
   
- dput(Minex_S_Cobar$WaterTable)
+view(S_Cobar)
 
-
+S_Cobar_tidy<-S_Cobar %>% 
+  select(7:9,12,14,17,20:27,42:45) %>%                               # xtract columns of interest
+  unite(1,2,3,4, col= "SampleID", sep="-")%>%                  # combine column to get sampleID
+  mutate("SampleName"=toupper(SiteName))%>%                    # homogenise samplename to capital
+  separate_rows(SampleName, sep=" ")  %>%                      # ????? need to split row into 2 when duplicate sampling
+  filter(str_detect(SampleName,"MX")|is.na(SampleName)) %>%    # need to delete row that do not correspond to samples
+  rename(m_asl=ElevationMetresAboveSeaLevel)%>%                 #rename column for clarity
+  mutate("StationDeposit"=toupper(StationDeposit)) %>% 
+  #mutate(WaterTable_depth_m = sub("[^0-9]*([0-9\\.]*).*","\\1",Minex_S_Cobar$WaterTable))
+  select(16,1,2,5:10,12:15)
 
 
 # separate(WaterTable, c("depth_water_table","Obs_water_table"), sep= " ")                                                             # change fro scientific writing to regular numeric 
