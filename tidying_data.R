@@ -12,7 +12,7 @@ Asu<-read_csv("data/asu19100cp.csv")
 
 Minex_S_Cobar<-Geochem1 %>%
   select(7:9,12,14,17,20:26) %>% #extract columns of interest
-   #combine column to get sampleID
+  unite(1,2,3,4, col= "SampleID", sep="-")#combine column to get sampleID
   #need to homogenise samplename to capital
   #need to split row into 2 when duplicate sampling
   #Watertable homogenise to number and split into other column for accuracy that is defined by either a space or not separated only followed by ?
