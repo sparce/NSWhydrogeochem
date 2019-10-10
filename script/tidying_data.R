@@ -19,6 +19,7 @@ Geochem1_tidy<-Geochem1 %>%
   rename(m_asl=ElevationMetresAboveSeaLevel)%>%                 #rename column for clarity
   mutate("StationDeposit"=toupper(StationDeposit)) %>% 
   #mutate(WaterTable_depth_m = sub("[^0-9]*([0-9\\.]*).*","\\1",Minex_S_Cobar$WaterTable))
+  mutate(Conductivity= as.numeric(Conductivity))%>%
   select(16,1,2,5:10,12:15)
   
   
@@ -40,7 +41,7 @@ S_Cobar_tidy<-S_Cobar %>%
   
   #Watertable homogenise to number and split into other column for accuracy that is defined by either a space or not separated only followed by ?
   
-  
+  Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)
   
   
                                                 
