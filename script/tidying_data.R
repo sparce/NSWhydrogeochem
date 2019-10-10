@@ -43,6 +43,9 @@ S_Cobar_tidy<-S_Cobar %>%
   
   Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)
   
-  
+ Alks_tidy<-Alks_Aug2019 %>%
+   rename(SampleName = SAMPLE ID) %>% 
+   mutate("SampleName"=toupper(SampleName))
+   
                                                 
-
+Alks_Aug2019
