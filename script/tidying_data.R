@@ -17,12 +17,12 @@ Minex_S_Cobar<-Geochem1 %>%
   separate_rows(SampleName, sep=" ")  %>%                      # ????? need to split row into 2 when duplicate sampling
   filter(str_detect(SampleName,"MX")|is.na(SampleName)) %>%    # need to delete row that do not correspond to samples
   rename(m_asl=ElevationMetresAboveSeaLevel)%>%                 #rename column for clarity
-  mutate("StationDeposit"=toupper(StationDeposit)) %>% 
-  
+  mutate("StationDeposit"=toupper(StationDeposit))
+  #mutate(WaterTable_depth_m = sub("[^0-9]*([0-9\\.]*).*","\\1",Minex_S_Cobar$WaterTable))
   select(16,1,2,5:10,12:15)
   
   
- 
+ dput(Minex_S_Cobar$WaterTable)
 
 
 
