@@ -72,4 +72,10 @@ filter( str_starts(SampleName, pattern = "STD"))
  
  
 
+ #work on the samples from the August 2019 report
+ RepAug_lab<-Sample_repAug2019 %>% 
+   select(1,2,6:9)
+ 
+ RepAug_tidy<-Sample_repAug2019 %>% 
+   select(2:4)
  
