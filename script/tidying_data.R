@@ -7,7 +7,7 @@ Alks_Aug2019<-read_csv("data/GS New South Wales and Mt. Isa ALKS 05082019cp.csv"
 Asu<-read_csv("data/asu19100cp.csv", skip = 11)
 fixnamesAsu<-Asu 
   fixnamesAsu<- paste(colnames(fixnamesAsu),fixnamesAsu[1,])
-Asu_new_col_names<- read_csv("data/asu19100cp.csv", skip =14,col_names = fixnameAsu)
+Asu_new_col_names<- read_csv("data/asu19100cp.csv", skip = 14,col_names = fixnamesAsu)
 
 #work on datasheet Entity-watersample
 
