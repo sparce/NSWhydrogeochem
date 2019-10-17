@@ -44,8 +44,15 @@ S_Cobar_tidy<-S_Cobar %>%
   Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)
   
  Alks_tidy<-Alks_Aug2019 %>%
-   rename(SampleName = SAMPLE ID) %>% 
+   rename(SampleName = 'SAMPLE ID.') %>% 
    mutate("SampleName"=toupper(SampleName))
    
-                                                
-Alks_Aug2019
+
+ Alks_std<- Alks_tidy %>%                                         
+filter( str_starts(SampleName, pattern = "STD"))
+
+ Alks_tidy<-Alks_tidy %>% 
+   select(SampleName, Alkalinity, `volume (mL)`, pH ) %>% 
+   filter(str_starts (SampleName, "STD", negate = TRUE)) %>% 
+   transform(Alkalinity = as.numeric(Alkalinity))
+ 
