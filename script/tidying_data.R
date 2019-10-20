@@ -66,10 +66,10 @@ filter( str_starts(SampleName, pattern = "STD"))
    select(2,3,5:12,14:18,20:37,39:50) %>% 
    rename( SampleID_AN = 'X2 Sample ID', SampleID_CAT = 'X3 NA') 
    
- asu_tidy_zero<- asu_tidy %>% 
-   mutate_all(~if_else(. == str_detect(.,"<0"),"0",.))
-              #mutate_all(~if_else(. == "<0.05", "0", .))
- 
- 
-
- 
+ asu_tidy_zero <- asu_tidy %>%
+   # Make long format (columns: SampleID_AN, SampleID_CAT, component, reading)
+   gather(component, reading, -SampleID_AN, -SampleID_CAT) %>% 
+   separate(component, into = c("component", "units"), sep = " ") %>% 
+   #If below detection limit ("<0.X"), replace with 0, otherwise convert character value to numeric
+   mutate(reading = ifelse(str_detect(reading, "<0"), 0, as.numeric(reading))) %>% 
+   filter( !is.na(reading) ) # discard missing readings
