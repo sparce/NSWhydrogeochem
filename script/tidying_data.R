@@ -59,7 +59,7 @@ filter( str_starts(SampleName, pattern = "STD"))
  Alks_tidy<-Alks_tidy %>% 
    select(SampleName, Alkalinity, `volume (mL)`, pH ) %>% 
    filter(str_starts (SampleName, "STD", negate = TRUE)) %>% 
-   transform(Alkalinity = as.numeric(Alkalinity))
+   mutate(Alkalinity = as.numeric(Alkalinity))
  
  
  asu_tidy<-Asu %>% 
