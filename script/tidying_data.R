@@ -62,7 +62,11 @@ filter( str_starts(SampleName, pattern = "STD"))
  Alks_tidy<-Alks_tidy %>% 
    select(SampleName, Alkalinity, `volume (mL)`, pH ) %>% 
    filter(str_starts (SampleName, "STD", negate = TRUE)) %>% 
-   mutate(Alkalinity = as.numeric(Alkalinity))
+   mutate(Alkalinity = as.numeric(Alkalinity)) 
+ 
+ #put in long format
+   Alks_tidy_long<-gather(Alks_tidy,'Alkalinity','pH', key = "Measurement", value= "Value") %>% 
+     select(1,3,4)
  
  
  asu_tidy<-Asu %>% 
@@ -72,11 +76,11 @@ filter( str_starts(SampleName, pattern = "STD"))
 
  asu_tidy_zero <- asu_tidy %>%
    # Make long format (columns: SampleID_AN, SampleID_CAT, component, reading)
-   gather(component, reading, -SampleID_AN, -SampleID_CAT) %>% 
-   separate(component, into = c("component", "units"), sep = " ") %>% 
+   gather(Measurement, Value, -SampleID_AN, -SampleID_CAT) %>% 
+   separate(Measurement, into = c("Measurement", "units"), sep = " ") %>% 
    #If below detection limit ("<0.X"), replace with 0, otherwise convert character value to numeric
-   mutate(reading = ifelse(str_detect(reading, "<0"), 0, as.numeric(reading))) %>% 
-   filter( !is.na(reading) ) # discard missing readings
+   mutate(reading = ifelse(str_detect(Value, "<0"), 0, as.numeric(Value))) %>% 
+   filter( !is.na(Value) ) # discard missing readings
 
 
  #work on the samples from the August 2019 report
@@ -84,6 +88,13 @@ filter( str_starts(SampleName, pattern = "STD"))
    select(1,2,6:9)
  
  RepAug_tidy<-Sample_repAug2019 %>% 
-   select(2:4)
+   select(2:4) %>% 
+      rename(SampleName= 'Client name', d18O_smow='?18O VSMOW',d2H_smow= '?D VSMOW')
  
+ 
+ #make long format 
+  RepAug_tidy_long<-RepAug_tidy %>% 
+   gather('d18O_smow', 'd2H_smow', key= "Measurement", value= "Value") %>% 
+   filter(!is.na(SampleName)) %>% 
+    separate(Measurement, into =c("Measurement","units"), sep = "_")
 
