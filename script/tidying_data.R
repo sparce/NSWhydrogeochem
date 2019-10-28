@@ -46,7 +46,10 @@ S_Cobar_tidy<-S_Cobar %>%
   
   #Watertable homogenise to number and split into other column for accuracy that is defined by either a space or not separated only followed by ?
   
-  Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)
+  Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)  
+    # put in long format
+   Obs_Field_NSW_long<- gather(Obs_Field_NSW, 'Latitude', 'Longitude', 'Northing', 'Easting', 'Temperature', 'Conductivity', 'PreferredPH', 'PreferredEh', key ="Measurement", value="Value") %>% 
+     select(SampleName, StationDeposit, Measurement, Value)
   
  Alks_tidy<-Alks_Aug2019 %>%
    rename(SampleName = 'SAMPLE ID.') %>% 
