@@ -92,11 +92,24 @@ filter( str_starts(SampleName, pattern = "STD"))
    mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
    mutate(CAT = ifelse(CAT == TRUE, "Y", "N")) %>% 
    separate(SampleName1, into = c("SampleName1", "SampleName2"), sep = "_") %>% 
+   separate(SampleName1, into = c("SampleName1", "extra1"), sep = " ") %>% 
+   separate(SampleName2, into = c("SampleName2", "extra2"), sep = " ") %>% 
+   select(-extra1, -extra2) #%>% 
+  #
+   
+   #mutate(SampleName3 = replace_na(SampleName1, 'SampleName2')) 
+   #I am trying to create a column "SampleName3" that would replace NAs in SAmpleName1 by the values in SampleName2, and replace NAs in SampleName2 by values in SampleName 1. 
+   # by doin this I could then have a clean dataset that can be merged with others.
+   
+   
+   #mutate(SampleName1, replace(SampleName1, str_detect(SampleName1, "unknown"), 'SampleName2')) %>% 
+   #mutate(SampleName2, replace(SampleName2, str_detect(SampleName2, "unknown"), 'SampleName1'))
+ 
    #I need to create column SampleName that only contains the "MX" type sample get rid of Unknown
    #then hopefully merge will work 
    
    
-   #Suggestion from Peter, but it does not work when uniting again see what trick I can do
+   #Suggestion from Peter, but it does not work when uniting again see what trick I can do?
    #mutate(SampleName1 = na_if(SampleName1, "unknown")) %>% 
    #mutate(SampleName2 = na_if(SampleName2, "unknown")) %>% 
    
