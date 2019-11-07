@@ -69,6 +69,7 @@ filter( str_starts(SampleName, pattern = "STD"))
      select(1,3,4)
  
  
+   # work on asu 
  asu_tidy<-Asu %>% 
    select(2,3,5:12,14:18,20:37,39:50) %>% 
    rename( SampleID_AN = 'X2 Sample ID', SampleID_CAT = 'X3 NA') 
@@ -80,21 +81,40 @@ filter( str_starts(SampleName, pattern = "STD"))
    separate(Measurement, into = c("Measurement", "units"), sep = " ") %>% 
    #If below detection limit ("<0.X"), replace with 0, otherwise convert character value to numeric
    mutate(reading = ifelse(str_detect(Value, "<0"), 0, as.numeric(Value))) %>% 
-   filter( !is.na(Value) ) # discard missing readings
+   filter( !is.na(Value) ) %>%  # discard missing readings 
+   mutate(SampleID_AN = replace_na(SampleID_AN,"unknown")) %>% 
+   mutate(SampleID_CAT = replace_na(SampleID_CAT, "unknown")) %>% 
+   unite(SampleID_AN, SampleID_CAT, col = "SampleName1") %>% 
+   mutate(AN = stringr::str_detect(SampleName1, "AN")) %>%
+   mutate(CAT=stringr::str_detect(SampleName1,"CAT")) %>% 
+   
+  
+ asu_std<- asu_tidy_zero %>% 
+   filter(str_detect(SampleName1, "MX", negate = TRUE))
+ 
+ 
+ # filter(stringr::str_detect())
+  #ifelse(substr(SampleID_AN, 1,2) == "MX")
+   
+   #separate(SampleID_AN, into = c("SampleID", "SampleType"), sep = " ")
 
 
  #work on the samples from the August 2019 report
  RepAug_lab<-Sample_repAug2019 %>% 
    select(1,2,6:9)
- 
- RepAug_tidy<-Sample_repAug2019 %>% 
+  RepAug_tidy<-Sample_repAug2019 %>% 
    select(2:4) %>% 
       rename(SampleName= 'Client name', d18O_smow='?18O VSMOW',d2H_smow= '?D VSMOW')
- 
- 
- #make long format 
+  #make long format 
   RepAug_tidy_long<-RepAug_tidy %>% 
    gather('d18O_smow', 'd2H_smow', key= "Measurement", value= "Value") %>% 
    filter(!is.na(SampleName)) %>% 
-    separate(Measurement, into =c("Measurement","units"), sep = "_")
+    separate(Measurement, into =c("Measurement","units"), sep = "_") %>% 
+    separate(SampleName, into = c("SampleName", "SampleType"), sep = " ")
 
+
+  
+  # combine all tidied dataframes into one
+  
+  
+  
