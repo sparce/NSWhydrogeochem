@@ -47,9 +47,11 @@ S_Cobar_tidy<-S_Cobar %>%
   #Watertable homogenise to number and split into other column for accuracy that is defined by either a space or not separated only followed by ?
   
   Obs_Field_NSW<-full_join(Geochem1_tidy, S_Cobar_tidy)  
-    # put in long format
+    # put in long format and replace NA by unknown
    Obs_Field_NSW_long<- gather(Obs_Field_NSW, 'Latitude', 'Longitude', 'Northing', 'Easting', 'Temperature', 'Conductivity', 'PreferredPH', 'PreferredEh', key ="Measurement", value="Value") %>% 
-     select(SampleName, StationDeposit, Measurement, Value)
+     select(SampleName, StationDeposit, Measurement, Value) %>% 
+     mutate(SampleName = replace_na(SampleName,"unknown")) %>%
+     mutate(StationDeposit = replace_na(StationDeposit,"unknown")) 
   
  Alks_tidy<-Alks_Aug2019 %>%
    rename(SampleName = 'SAMPLE ID.') %>% 
@@ -69,7 +71,7 @@ filter( str_starts(SampleName, pattern = "STD"))
      select(1,3,4)
  
  
-   # work on asu 
+# work on asu 
  asu_tidy<-Asu %>% 
    select(2,3,5:12,14:18,20:37,39:50) %>% 
    rename( SampleID_AN = 'X2 Sample ID', SampleID_CAT = 'X3 NA') 
@@ -88,7 +90,17 @@ filter( str_starts(SampleName, pattern = "STD"))
    mutate(AN = stringr::str_detect(SampleName1, "AN")) %>%
    mutate(CAT=stringr::str_detect(SampleName1,"CAT")) %>% 
    mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
-   mutate(CAT = ifelse(CAT == TRUE, "Y", "N"))
+   mutate(CAT = ifelse(CAT == TRUE, "Y", "N")) %>% 
+   separate(SampleName1, into = c("SampleName1", "SampleName2"), sep = "_") %>% 
+   #I need to create column SampleName that only contains the "MX" type sample get rid of Unknown
+   #then hopefully merge will work 
+   
+   
+   #Suggestion from Peter, but it does not work when uniting again see what trick I can do
+   #mutate(SampleName1 = na_if(SampleName1, "unknown")) %>% 
+   #mutate(SampleName2 = na_if(SampleName2, "unknown")) %>% 
+   
+   
   
  #create asu dataframe with standard values
  asu_std<- asu_tidy_zero %>% 
@@ -100,7 +112,8 @@ filter( str_starts(SampleName, pattern = "STD"))
    asu_for_merging<- asu_tidy_zero %>% 
      filter(str_detect(SampleName1, "MX", negate = FALSE)) %>% 
      separate(SampleName1, into = c("SampleName", "extra"), sep = " ") %>% 
-     select(SampleName, AN, CAT, Measurement, Units, Value)
+     select(-extra) %>% 
+     mutate(Value = as.numeric(Value))
      
      #mutate(SampleName = )
    
@@ -120,12 +133,19 @@ filter( str_starts(SampleName, pattern = "STD"))
   RepAug_tidy_long<-RepAug_tidy %>% 
    gather('d18O_smow', 'd2H_smow', key= "Measurement", value= "Value") %>% 
    filter(!is.na(SampleName)) %>% 
-    separate(Measurement, into =c("Measurement","units"), sep = "_") %>% 
-    separate(SampleName, into = c("SampleName", "SampleType"), sep = " ")
+    separate(Measurement, into =c("Measurement","Units"), sep = "_") %>% 
+    separate(SampleName, into = c("SampleName", "SampleType"), sep = " ") %>% 
+    mutate(AN = stringr::str_detect(SampleType, "AN")) %>%
+    mutate(CAT=stringr::str_detect(SampleType,"CAT")) %>% 
+    mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
+    mutate(CAT = ifelse(CAT == TRUE, "Y", "N")) %>% 
+    select(SampleName, AN, CAT, Measurement, Units, Value )
 
 
   
   # combine all tidied dataframes into one
   
-  
+  NSW_Hydro<- full_join(RepAug_tidy_long, asu_for_merging  , by = NULL) %>% 
+    separate(SampleName, into = c("extra", "SampleName"), sep = "_") %>% 
+    
   
