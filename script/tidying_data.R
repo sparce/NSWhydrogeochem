@@ -74,11 +74,11 @@ filter( str_starts(SampleName, pattern = "STD"))
    select(2,3,5:12,14:18,20:37,39:50) %>% 
    rename( SampleID_AN = 'X2 Sample ID', SampleID_CAT = 'X3 NA') 
    
-
+#tidying asu
  asu_tidy_zero <- asu_tidy %>%
    # Make long format (columns: SampleID_AN, SampleID_CAT, component, reading)
    gather(Measurement, Value, -SampleID_AN, -SampleID_CAT) %>% 
-   separate(Measurement, into = c("Measurement", "units"), sep = " ") %>% 
+   separate(Measurement, into = c("Measurement", "Units"), sep = " ") %>% 
    #If below detection limit ("<0.X"), replace with 0, otherwise convert character value to numeric
    mutate(reading = ifelse(str_detect(Value, "<0"), 0, as.numeric(Value))) %>% 
    filter( !is.na(Value) ) %>%  # discard missing readings 
@@ -87,12 +87,23 @@ filter( str_starts(SampleName, pattern = "STD"))
    unite(SampleID_AN, SampleID_CAT, col = "SampleName1") %>% 
    mutate(AN = stringr::str_detect(SampleName1, "AN")) %>%
    mutate(CAT=stringr::str_detect(SampleName1,"CAT")) %>% 
-   
+   mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
+   mutate(CAT = ifelse(CAT == TRUE, "Y", "N"))
   
+ #create asu dataframe with standard values
  asu_std<- asu_tidy_zero %>% 
-   filter(str_detect(SampleName1, "MX", negate = TRUE))
+   filter(str_detect(SampleName1, "MX", negate = TRUE))  
+   mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
+   mutate(CAT = ifelse(CAT == TRUE, "Y", "N"))
  
- 
+ #tidying asu for later merging of dataframe
+   asu_for_merging<- asu_tidy_zero %>% 
+     filter(str_detect(SampleName1, "MX", negate = FALSE)) %>% 
+     separate(SampleName1, into = c("SampleName", "extra"), sep = " ") %>% 
+     select(SampleName, AN, CAT, Measurement, Units, Value)
+     
+     #mutate(SampleName = )
+   
  # filter(stringr::str_detect())
   #ifelse(substr(SampleID_AN, 1,2) == "MX")
    
