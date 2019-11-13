@@ -94,10 +94,14 @@ filter( str_starts(SampleName, pattern = "STD"))
    separate(SampleName1, into = c("SampleName1", "SampleName2"), sep = "_") %>% 
    separate(SampleName1, into = c("SampleName1", "extra1"), sep = " ") %>% 
    separate(SampleName2, into = c("SampleName2", "extra2"), sep = " ") %>% 
-   select(-extra1, -extra2) #%>% 
-  #
-   
-   #mutate(SampleName3 = replace_na(SampleName1, 'SampleName2')) 
+   select(-extra1, -extra2) %>% 
+   mutate(SampleName1 = na_if(SampleName1, "unknown")) %>% 
+   mutate(SampleName2 = na_if(SampleName2, "unknown")) %>% 
+   mutate(SampleName = ifelse(is.na(SampleName1), SampleName2, SampleName1)) %>% 
+   select(SampleName, AN, CAT, Measurement, Units, Value )
+  
+ 
+  #mutate(SampleName3 = replace_na(SampleName1, 'SampleName2')) 
    #I am trying to create a column "SampleName3" that would replace NAs in SAmpleName1 by the values in SampleName2, and replace NAs in SampleName2 by values in SampleName 1. 
    # by doin this I could then have a clean dataset that can be merged with others.
    
@@ -117,15 +121,12 @@ filter( str_starts(SampleName, pattern = "STD"))
   
  #create asu dataframe with standard values
  asu_std<- asu_tidy_zero %>% 
-   filter(str_detect(SampleName1, "MX", negate = TRUE))  
-   mutate(AN = ifelse(AN == TRUE, "Y", "N")) %>% 
-   mutate(CAT = ifelse(CAT == TRUE, "Y", "N"))
+   filter(str_detect(SampleName, "MX", negate = TRUE))  
+  
  
  #tidying asu for later merging of dataframe
    asu_for_merging<- asu_tidy_zero %>% 
-     filter(str_detect(SampleName1, "MX", negate = FALSE)) %>% 
-     separate(SampleName1, into = c("SampleName", "extra"), sep = " ") %>% 
-     select(-extra) %>% 
+     filter(str_detect(SampleName, "MX", negate = FALSE)) %>% 
      mutate(Value = as.numeric(Value))
      
      #mutate(SampleName = )
